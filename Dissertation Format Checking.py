@@ -4,8 +4,8 @@ def clean_tail(s):
 
 refdata = open('ref.txt','r').read().split('\n')
 
-print 'Reading reference list'
-print 'Number of references',len(refdata)
+print('Reading reference list')
+print('Number of references',len(refdata))
 
 refs = []
 
@@ -13,7 +13,7 @@ for r in refdata:
     a1, a2 = r.find('. 19'), r.find('. 20')
     l = max(a1,a2)
     if l < 0:
-        print '-> No year info found in reference:', r
+        print('-> No year info found in reference:', r)
     else:
         if a1 > 0 and a2 > 0:
             l = min(a1,a2)
@@ -26,14 +26,14 @@ for r in refdata:
     a = authorpart.split(',')
 
     if len(a) == 1:
-        print 'Company author:', a
+        print('Company author:', a)
         newrefitem = a[0][:-1] + ' ' + year
 
     elif len(a) %2 != 0:
-        print '-> Wrong author format:', authorpart
+        print('-> Wrong author format:', authorpart)
         continue
     elif len(a) > 6:
-        print '-> Too many authors:', authorpart
+        print('-> Too many authors:', authorpart)
         continue
     else:
         if len(a) == 2:
@@ -47,15 +47,15 @@ for r in refdata:
         newrefitem = newrefitem.replace(r'U.S. Energy Information Administration (EIA)','EIA')
 
     if newrefitem in refs:
-        print '-> Duplicate reference item:',newrefitem, r
+        print('-> Duplicate reference item:',newrefitem, r)
     refs.append(newrefitem)
 
-print 'Reference list:',refs
+print('Reference list:',refs)
 
 hitref = dict(zip(refs,[False]*len(refs)))
 
 
-print 'Analyzing dissertation content'
+print('Analyzing dissertation content')
 
 figures = []
 mentioned_figures = []
@@ -65,15 +65,15 @@ data = open('dissertation.txt','r').read().split('\n')
 
 for counter,l in enumerate(data):
     if 'Error! Reference source not found' in l:
-        print '-> Critical: Reference source not found error'
+        print('-> Critical: Reference source not found error')
 
     s = l.split()
     if len(s) >=1 and s[0] == 'Where':
-        print '-> "Where" after equation',l
+        print('-> "Where" after equation',l)
     if len(s) >=1 and s[0] == 'where':
         ss = data[counter-1].split()
         if len(ss) >= 2 and ss[-2] != ',':
-            print '-> %s before "where"' %data[counter-1].split()[-2],l
+            print('-> %s before "where"' %data[counter-1].split()[-2],l)
     for i, w in enumerate(s):
         if w == 'Figure' or w == 'Table' or w == '(Figure' or w == '(Table':
             w = w.replace('(','')
@@ -85,7 +85,7 @@ for counter,l in enumerate(data):
                     figurenum = figurenum.rstrip(_)
                 figurenum = w + ' ' + figurenum
                 if figurenum in figures and figurenum not in mentioned_figures:
-                    print '-> Figure referenced after the title:', figurenum,l
+                    print('-> Figure referenced after the title:', figurenum,l)
                 if figurenum not in mentioned_figures:
                     mentioned_figures.append(figurenum)
         elif ')' in w or ';' in w:
@@ -122,17 +122,17 @@ for counter,l in enumerate(data):
                 if match:
                     hitref[refstring_match] = True
                 if not match:
-                    print '-> Reference not found in reference list:',refstring
+                    print('-> Reference not found in reference list:',refstring)
 
 
-print 'Mentioned figures:',mentioned_figures
-print '  Defined figures:',figures
+print('Mentioned figures:',mentioned_figures)
+print('  Defined figures:',figures)
 for i in range(len(mentioned_figures)):
     if mentioned_figures[i] != figures[i]:
-        print '-> Difference in figure reference:',mentioned_figures[i],figures[i]
+        print('-> Difference in figure reference:',mentioned_figures[i],figures[i])
         break
 
 
 for k,v in hitref.items():
     if v is False:
-        print '-> Reference in the list not referenced in the text:',k
+        print('-> Reference in the list not referenced in the text:',k)
